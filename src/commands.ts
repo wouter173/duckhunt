@@ -12,6 +12,9 @@ const commands = [
     .setName("stats")
     .setDescription("Show duck stats!"),
   new SlashCommandBuilder()
+    .setName("kills")
+    .setDescription("Show your duck kills!"),
+  new SlashCommandBuilder()
     .setName("settings")
     .setDescription("Configure the bot for your server")
     .addSubcommand((subcommand) =>

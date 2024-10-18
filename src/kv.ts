@@ -1,4 +1,4 @@
-const INTERNAL_kv = await Deno.openKv("./db.sqlite");
+const INTERNAL_kv = await Deno.openKv("./db/db.sqlite");
 
 Deno.addSignalListener("SIGINT", () => {
   INTERNAL_kv.close();
@@ -44,12 +44,17 @@ function guildSettingsSetChannel({ guildId, channelId }: { guildId: string; chan
 }
 
 function guildMemberAddKill({ guildId, memberId }: { guildId: string; memberId: string }) {
-  return INTERNAL_kv.atomic().sum(["guild", guildId, "member", memberId, "kills"], 1n).commit();
+  return INTERNAL_kv.atomic().sum(["guild", guildId, "member", "kills", memberId], 1n).commit();
 }
 
 async function guildMemberGetKills({ guildId, memberId }: { guildId: string; memberId: string }) {
-  const kills = await INTERNAL_kv.get<bigint>(["guild", guildId, "member", memberId, "kills"]);
+  const kills = await INTERNAL_kv.get<bigint>(["guild", guildId, "member", "kills", memberId]);
   return Number(kills.value);
+}
+
+async function guildMemberGetAllKills({ guildId }: { guildId: string }) {
+  const kills = await INTERNAL_kv.list<bigint>({ prefix: ["guild", guildId, "member", "kills"] });
+  return kills;
 }
 
 async function guildMemberUseBullet({ guildId, memberId }: { guildId: string; memberId: string }) {
@@ -89,6 +94,7 @@ const kv = {
   guildSettingsSetChannel,
   guildMemberAddKill,
   guildMemberGetKills,
+  guildMemberGetAllKills,
   guildMemberUseBullet,
   guildMemberGetBullets,
   guildMemberReload,

@@ -1,6 +1,7 @@
 {
   "tasks": {
     "dev": "deno run --watch --env --allow-all src/main.ts",
+    "start": "deno run --env --allow-all src/main.ts",
     "deploy-commands": "deno run --env --allow-all src/commands.ts"
   },
   "unstable": ["kv", "cron"],
