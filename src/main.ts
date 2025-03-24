@@ -5,6 +5,8 @@ import { kv } from "./kv.ts";
 import { queue } from "./queue.ts";
 import { generateRandomDelay } from "./schedular.ts";
 
+const prefix = "!";
+
 const client = new Client({
   intents: [
     IntentsBitField.Flags.Guilds,
@@ -28,11 +30,13 @@ async function summonDuck({ delay, guildId, ttl }: { delay?: number; ttl?: numbe
 
 async function scheduleTasks() {
   const guilds: Collection<Snowflake, OAuth2Guild> = await client.guilds.fetch();
-  guilds.forEach(async (guild) => {
-    await summonDuck({ guildId: guild.id });
-    await summonDuck({ guildId: guild.id });
-    await summonDuck({ guildId: guild.id, delay: 5 * 1000, ttl: 10 * 1000 });
-  });
+  for (const guild of guilds.values()) {
+    const guildId = guild.id;
+
+    await summonDuck({ guildId });
+    await summonDuck({ guildId });
+    await summonDuck({ guildId, delay: 5 * 1000, ttl: 10 * 1000 });
+  }
 }
 
 queue.listen(async (task) => {
@@ -48,6 +52,7 @@ queue.listen(async (task) => {
   } else if (task.type === "duck-leave") {
     const guildDuck = await kv.guildGetDuck({ guildId: task.payload.guildId, duckId: task.payload.duckId });
     if (guildDuck?.killedAt !== null) return;
+    if (guildDuck?.fledAt !== null) return;
 
     const channelId = await kv.guildSettingsGetChannel({ guildId: task.payload.guildId });
     if (!channelId) return console.warn("No channel set for guild", task.payload.guildId);
@@ -64,12 +69,21 @@ client.on("ready", (client) => {
 
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
+  if (!interaction.guildId) {
+    interaction.reply("This command can only be used in a server!");
+    return;
+  }
+
+  if (!interaction.member) {
+    interaction.reply("You need to be in a server to use this command!");
+    return;
+  }
 
   if (interaction.commandName === "stats") {
     const killsMap: Record<string, number> = {};
 
-    const allMemberKills = await kv.guildMemberGetAllKills({ guildId: interaction.guildId! });
-    const guild = await client.guilds.fetch(interaction.guildId!);
+    const allMemberKills = await kv.guildMemberGetAllKills({ guildId: interaction.guildId });
+    const guild = await client.guilds.fetch(interaction.guildId);
     for await (const kill of allMemberKills) {
       const member = await guild.members.fetch(kill.key[4]);
       killsMap[member.user.displayName] = Number(kill.value);
@@ -84,8 +98,8 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   if (interaction.commandName === "kills") {
-    const kills = await kv.guildMemberGetKills({ guildId: interaction.guildId!, memberId: interaction.member.id });
-    const bullets = await kv.guildMemberGetBullets({ guildId: interaction.guildId!, memberId: interaction.member.id });
+    const kills = await kv.guildMemberGetKills({ guildId: interaction.guildId, memberId: interaction.member.id! });
+    const bullets = await kv.guildMemberGetBullets({ guildId: interaction.guildId, memberId: interaction.member.id! });
 
     await interaction.reply({ content: `You have ${kills} kills and ${bullets} bullets!`, ephemeral: true });
   }
@@ -94,9 +108,9 @@ client.on("interactionCreate", async (interaction) => {
     const subCommand = interaction.options.data.find((option) => option.type === 1);
 
     if (subCommand?.name === "channel") {
-      const channelId = subCommand.options![0].value as string;
+      const channelId = subCommand.options?.[0].value as string;
 
-      await kv.guildSettingsSetChannel({ guildId: interaction.guildId!, channelId: channelId });
+      await kv.guildSettingsSetChannel({ guildId: interaction.guildId, channelId: channelId });
       interaction.reply({ content: `Set your guilds duck channel to <#${channelId}>!`, ephemeral: true });
     }
   }
@@ -105,51 +119,70 @@ client.on("interactionCreate", async (interaction) => {
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   if (!message.guild) return;
+  if (!message.member) return;
 
-  if (message.content === "!ping") {
-    await scheduleTasks();
-    await message.reply("Pong!");
-  }
+  const memberId = message.member.id;
+  const guildId = message.guild.id;
 
-  if (message.content === "!reload") {
-    const isJammed = await kv.guildMemberGetIsWeaponJammed({ guildId: message.guild.id, memberId: message.member!.id });
-    if (isJammed) {
-      await kv.guildMemberUnJamWeapon({ guildId: message.guild.id, memberId: message.member!.id });
-    }
-    await kv.guildMemberReload({ guildId: message.guild.id, memberId: message.member!.id });
+  if (message.content.startsWith(`${prefix}reload`)) {
+    const isJammed = await kv.guildMemberGetIsWeaponJammed({ guildId, memberId });
+    if (isJammed) await kv.guildMemberUnJamWeapon({ guildId, memberId });
+
+    await kv.guildMemberReload({ guildId, memberId });
     message.reply("You reloaded your gun! You have \`(6/6)\` bullets now!");
   }
 
-  if (message.content === "!shoot") {
-    const bullets = await kv.guildMemberGetBullets({ guildId: message.guild.id, memberId: message.member!.id });
+  if (message.content.startsWith(`${prefix}shoot`)) {
+    const shotAtMemberId = message.content.match(/\!shoot \<\@(\d.+)\>/)?.[1];
+
+    if (shotAtMemberId) {
+      const guildDucks = await kv.guildGetAllDucks({ guildId });
+      for await (const duck of guildDucks) {
+        if (duck.value.leavesAt.getTime() < new Date().getTime()) continue;
+        if (duck.value.spawnsAt.getTime() > new Date().getTime()) continue;
+        if (duck.value.killedAt !== null) continue;
+        if (duck.value.fledAt !== null) continue;
+
+        await kv.guildDuckFlee({ guildId, duckId: duck.key[3] as string, fledAt: message.createdAt });
+        message.reply(`You shot at <@${shotAtMemberId}>, they ran away and the duck fled the crime scene!`);
+
+        return;
+      }
+
+      message.reply(`You shot at <@${shotAtMemberId}>, they ran away, and you hear a duck happily quacking in the distance...`);
+      return;
+    }
+
+    const bullets = await kv.guildMemberGetBullets({ guildId, memberId });
     if (bullets <= 0) {
       message.reply("You are out of bullets! You need to `!reload`!");
       return;
     }
 
-    const isJammed = await kv.guildMemberGetIsWeaponJammed({ guildId: message.guild.id, memberId: message.member!.id });
+    const isJammed = await kv.guildMemberGetIsWeaponJammed({ guildId, memberId });
     if (isJammed) {
       message.reply("Your gun is jammed! You need to `!reload`!");
       return;
     }
 
     if (Math.random() > 0.9) {
-      await kv.guildMemberJamWeapon({ guildId: message.guild.id, memberId: message.member!.id });
+      await kv.guildMemberJamWeapon({ guildId, memberId });
       message.reply("Damn, your gun jammed! You need to `!reload`!");
       return;
     }
 
-    await kv.guildMemberUseBullet({ guildId: message.guild.id, memberId: message.member!.id });
+    await kv.guildMemberUseBullet({ guildId, memberId });
 
-    const guildDucks = await kv.guildGetAllDucks({ guildId: message.guild.id });
+    const guildDucks = await kv.guildGetAllDucks({ guildId });
     for await (const duck of guildDucks) {
       if (duck.value.leavesAt.getTime() < new Date().getTime()) continue;
       if (duck.value.spawnsAt.getTime() > new Date().getTime()) continue;
       if (duck.value.killedAt !== null) continue;
+      if (duck.value.fledAt !== null) continue;
 
-      await kv.guildKillDuck({ guildId: message.guild.id, duckId: duck.key[3] as string, killedAt: message.createdAt });
-      await kv.guildMemberAddKill({ guildId: message.guild.id, memberId: message.member!.id });
-      message.reply(`You shot the duck! it died! succesfully! +1 kill! -1 bullet! for you! \`(${bullets - 1}/6)\``);
+      await kv.guildDuckKill({ guildId, duckId: duck.key[3] as string, killedAt: message.createdAt });
+      await kv.guildMemberAddKill({ guildId, memberId });
+      message.reply(`You shot the duck! it died! successfully! +1 kill! -1 bullet! for you! \`(${bullets - 1}/6)\``);
       return;
     }
 

@@ -3,9 +3,13 @@ import { REST } from "npm:@discordjs/rest";
 
 import { ChannelType, Routes } from "npm:discord-api-types/v10";
 
-const clientId = Deno.env.get("CLIENT_ID")!;
-const guildId = Deno.env.get("GUILD_ID")!;
-const token = Deno.env.get("TOKEN")!;
+function raise(msg: string): never {
+  throw new Error(msg);
+}
+
+const clientId = Deno.env.get("CLIENT_ID") ?? raise("Missing environment variable, CLIENT_ID");
+const guildId = Deno.env.get("GUILD_ID") ?? raise("Missing environment variable, GUILD_ID");
+const token = Deno.env.get("TOKEN") ?? raise("Missing environment variable, TOKEN");
 
 const commands = [
   new SlashCommandBuilder()
@@ -31,8 +35,7 @@ const commands = [
     ),
 ];
 
-// Construct and prepare an instance of the REST module
-const rest = new REST().setToken(token); // and deploy your commands!
+const rest = new REST().setToken(token);
 
 (async () => {
   try {
@@ -40,7 +43,6 @@ const rest = new REST().setToken(token); // and deploy your commands!
       `Started refreshing ${commands.length} application (/) commands.`,
     );
 
-    // The put method is used to fully refresh all commands in the guild with the current set
     const data = await rest.put(
       Routes.applicationGuildCommands(clientId, guildId),
       { body: commands },
@@ -50,7 +52,6 @@ const rest = new REST().setToken(token); // and deploy your commands!
       `Successfully reloaded ${typeof data === "object" && data !== null && "length" in data ? data.length : ""} application (/) commands.`,
     );
   } catch (error) {
-    // And of course, make sure you catch and log any errors!
     console.error(error);
   }
 })();

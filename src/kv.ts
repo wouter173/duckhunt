@@ -9,6 +9,7 @@ export type GuildDuck = {
   spawnsAt: Date;
   leavesAt: Date;
   killedAt: Date | null;
+  fledAt: Date | null;
 };
 
 async function guildGetAllDucks({ guildId }: { guildId: string }) {
@@ -29,9 +30,14 @@ function guildAddDuck({ guildId, duckId, spawnsAt, leavesAt }: { guildId: string
   } as GuildDuck);
 }
 
-async function guildKillDuck({ guildId, duckId, killedAt }: { guildId: string; duckId: string; killedAt: Date }) {
+async function guildDuckKill({ guildId, duckId, killedAt }: { guildId: string; duckId: string; killedAt: Date }) {
   const duck = await guildGetDuck({ guildId, duckId });
   INTERNAL_kv.set(["guild", guildId, "duck", duckId], { ...duck, killedAt });
+}
+
+async function guildDuckFlee({ guildId, duckId, fledAt }: { guildId: string; duckId: string; fledAt: Date }) {
+  const duck = await guildGetDuck({ guildId, duckId });
+  INTERNAL_kv.set(["guild", guildId, "duck", duckId], { ...duck, fledAt });
 }
 
 async function guildSettingsGetChannel({ guildId }: { guildId: string }) {
@@ -89,7 +95,8 @@ const kv = {
   guildAddDuck,
   guildGetDuck,
   guildGetAllDucks,
-  guildKillDuck,
+  guildDuckKill,
+  guildDuckFlee,
   guildSettingsGetChannel,
   guildSettingsSetChannel,
   guildMemberAddKill,
@@ -101,6 +108,7 @@ const kv = {
   guildMemberJamWeapon,
   guildMemberUnJamWeapon,
   guildMemberGetIsWeaponJammed,
+  internal: INTERNAL_kv,
 };
 
-export { INTERNAL_kv as INTERNAL_kv, kv };
+export { kv };
