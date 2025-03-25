@@ -2,10 +2,7 @@ import { SlashCommandBuilder } from "npm:@discordjs/builders";
 import { REST } from "npm:@discordjs/rest";
 
 import { ChannelType, Routes } from "npm:discord-api-types/v10";
-
-function raise(msg: string): never {
-  throw new Error(msg);
-}
+import { raise } from "./lib/utils.ts";
 
 const clientId = Deno.env.get("CLIENT_ID") ?? raise("Missing environment variable, CLIENT_ID");
 const guildId = Deno.env.get("GUILD_ID") ?? raise("Missing environment variable, GUILD_ID");
@@ -37,7 +34,7 @@ const commands = [
 
 const rest = new REST().setToken(token);
 
-(async () => {
+export async function syncCommands() {
   try {
     console.log(
       `Started refreshing ${commands.length} application (/) commands.`,
@@ -54,4 +51,4 @@ const rest = new REST().setToken(token);
   } catch (error) {
     console.error(error);
   }
-})();
+}
