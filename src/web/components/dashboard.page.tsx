@@ -17,7 +17,7 @@ const LeaderBoard = async ({ guildId }: { guildId: string }) => {
   const sortedKills = Object.entries(killsMap).sort((a, b) => b[1] - a[1]);
   if (sortedKills.length === 0) return <>No ducks have been removed from the face of the earth yet!</>;
 
-  const topKillsMessage = sortedKills.map(([user, kills], i) => `${i + 1}. ${user}: ${kills} kills`).join("\n");
+  const topKillsMessage = sortedKills.map(([user, kills], i) => `${i + 1}. ${user}: ${kills} kill${kills !== 1 ? "s" : ""}`).join("\n");
   return (
     <>
       {topKillsMessage}
