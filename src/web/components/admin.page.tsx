@@ -19,6 +19,9 @@ export const AdminPage = ({ params }: { params: Record<string, string> }) => {
       <form action="/admin/schedule">
         <button>schedule</button>
       </form>
+      <form action="/admin/schedule-now">
+        <button>schedule now</button>
+      </form>
       <form action="/admin/sync-commands">
         <button>sync commands</button>
       </form>

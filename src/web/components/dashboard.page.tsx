@@ -27,6 +27,7 @@ const LeaderBoard = async ({ guildId }: { guildId: string }) => {
 
 export const DashboardPage = ({ params }: { params: Record<string, string> }) => {
   const status = params.status;
+  const guildId = Deno.env.get("GUILD_ID")!;
 
   return (
     <Layout>
@@ -45,7 +46,7 @@ export const DashboardPage = ({ params }: { params: Record<string, string> }) =>
       <code>
         <pre style={{ width: "min-content", margin: "auto", marginTop: "1rem" }}>
           <Suspense fallback={<span>Loading...</span>}>
-            <LeaderBoard guildId="846468617142009917" />
+            <LeaderBoard guildId={guildId} />
           </Suspense>
         </pre>
       </code>

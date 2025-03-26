@@ -33,6 +33,10 @@ app.get("/admin/schedule", async (c) => {
   await scheduler.scheduleDucks();
   return c.redirect(`/admin?status=${encodeURIComponent("Tasks scheduled!")}`);
 });
+app.get("/admin/schedule-now", async (c) => {
+  await scheduler.scheduleDuck({ delay: 1 * 1000 * 60, guildId: Deno.env.get("GUILD_ID")! });
+  return c.redirect(`/admin?status=${encodeURIComponent("Tasks scheduled for in 1 minute!")}`);
+});
 app.get("/admin/dequeue", async (c) => {
   (await toArray(db.schedulerListTasks())).map((t) => db.schedulerRemoveTask(t.id));
   return c.redirect(`/admin?status=${encodeURIComponent("Tasks dequeued!")}`);

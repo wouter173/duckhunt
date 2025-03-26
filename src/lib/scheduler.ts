@@ -1,9 +1,9 @@
+import { client } from "@/bot.ts";
+import { endOfMinute, isWithinInterval, startOfMinute } from "date-fns";
+import { Collection, OAuth2Guild, Snowflake } from "discord.js";
 import { nanoid } from "nanoid";
 import { db } from "./db.ts";
-import { Collection, OAuth2Guild, Snowflake } from "discord.js";
-import { client } from "@/bot.ts";
 import { toArray } from "./utils.ts";
-import { endOfMinute, isAfter, isBefore, startOfMinute } from "date-fns";
 
 export type Task =
   & { id: string; invokeAt: Date }
@@ -25,7 +25,8 @@ async function handleTasks() {
   const start = startOfMinute(now);
   const end = endOfMinute(now);
 
-  const currentTasks = allTasks.filter((t) => isAfter(t.invokeAt, start) && isBefore(t.invokeAt, end));
+  const currentTasks = allTasks.filter((t) => isWithinInterval(t.invokeAt, { start, end }));
+  console.log({ currentTasks });
 
   for (const task of currentTasks) {
     await handleTask(task);
@@ -94,4 +95,4 @@ async function scheduleDucks() {
   }
 }
 
-export const scheduler = { handleTask, scheduleDucks, handleTasks };
+export const scheduler = { scheduleDuck, scheduleDucks, handleTasks };

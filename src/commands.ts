@@ -9,6 +9,9 @@ const token = Deno.env.get("TOKEN") ?? raise("Missing environment variable, TOKE
 
 const commands = [
   new SlashCommandBuilder()
+    .setName("help")
+    .setDescription("Show available commands"),
+  new SlashCommandBuilder()
     .setName("stats")
     .setDescription("Show duck stats!"),
   new SlashCommandBuilder()

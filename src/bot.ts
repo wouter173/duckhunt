@@ -28,6 +28,26 @@ client.on("interactionCreate", async (interaction) => {
     return;
   }
 
+  if (interaction.commandName === "help") {
+    await interaction.reply({
+      ephemeral: true,
+
+      embeds: [
+        {
+          title: "Duckhunt",
+          url: "https://duckhunt.maishond.nl",
+          fields: [
+            { name: "/help", value: "this" },
+            { name: "/stats", value: "top 5 duck removers" },
+            { name: "/kills", value: "your kills and bullets" },
+            { name: "!reload", value: "reload your gun" },
+            { name: "!shoot or !shoot <@user>", value: "shoot a duck or a user" },
+          ],
+        },
+      ],
+    });
+  }
+
   if (interaction.commandName === "stats") {
     const killsMap: Record<string, number> = {};
 
@@ -93,12 +113,21 @@ client.on("messageCreate", async (message) => {
         if (duck.value.fledAt !== null) continue;
 
         await db.guildDuckFlee({ guildId, duckId: duck.key[3] as string, fledAt: message.createdAt });
-        message.reply(`You shot at <@${shotAtMemberId}>, they ran away and the duck fled the crime scene!`);
+        if (shotAtMemberId === memberId) {
+          message.reply(`You shot at... yourself? Please go search professional help, and the duck fled the crime scene!`);
+          return;
+        }
 
+        message.reply(`You shot at <@${shotAtMemberId}>, they ran away and the duck fled the crime scene!`);
         return;
       }
 
-      message.reply(`You shot at <@${shotAtMemberId}>, they ran away, and you hear a duck happily quacking in the distance...`);
+      if (shotAtMemberId === memberId) {
+        message.reply(`You shot at... yourself? Please go search professional help`);
+        return;
+      }
+
+      message.reply(`You shot at <@${shotAtMemberId}>, they almost died man... PLEASE STOP.`);
       return;
     }
 
