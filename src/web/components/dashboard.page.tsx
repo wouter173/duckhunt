@@ -1,6 +1,5 @@
 import { Layout } from "@/web/components/layout.tsx";
 import { Suspense } from "hono/jsx";
-import { DuckSvg } from "@/web/components/svg.tsx";
 import { client } from "@/bot.ts";
 import { db } from "@/lib/db.ts";
 
@@ -16,16 +15,13 @@ const LeaderBoard = async ({ guildId }: { guildId: string }) => {
   }
 
   const sortedKills = Object.entries(killsMap).sort((a, b) => b[1] - a[1]);
-  const topKills = sortedKills.slice(0, 5);
+  if (sortedKills.length === 0) return <>No ducks have been removed from the face of the earth yet!</>;
 
-  const topKillsMessage = topKills.map(([user, kills], i) => `${i + 1}. ${user}: ${kills} kills`).join("\n");
-
+  const topKillsMessage = sortedKills.map(([user, kills], i) => `${i + 1}. ${user}: ${kills} kills`).join("\n");
   return (
-    <code>
-      <pre>
-        {topKillsMessage}
-      </pre>
-    </code>
+    <>
+      {topKillsMessage}
+    </>
   );
 };
 
@@ -35,13 +31,24 @@ export const DashboardPage = ({ params }: { params: Record<string, string> }) =>
   return (
     <Layout>
       {status && <p>{status}</p>}
-      <div>
-        <DuckSvg />
-        <h1>Hello Hono!</h1>
-      </div>
-      <Suspense fallback={<div>Loading...</div>}>
-        <LeaderBoard guildId="846468617142009917" />
-      </Suspense>
+      <h1 style={{ visibility: "hidden" }}>Duckhunt!</h1>
+      <code aria-hidden>
+        <pre style={{ width: "min-content", margin: "auto" }}>{`
+                             ____             _      _                 _
+      _          _          |  _ \\ _   _  ___| | __ | |__  _   _ _ __ | |_     _          _
+    >(')____,  >(')____,    | | | | | | |/ __| |/ / | '_ \\| | | | '_ \\| __|  >(')____,  >(') ___,
+      (\` =~~/    (\` =~~/    | |_| | |_| | (__|   <  | | | | |_| | | | | |_     (\` =~~/    (\` =~~/
+   ~^~^\`---'~^~^~^\`---'~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^~^\`---'~^~^~^\`---'~^~^~
+`}
+        </pre>
+      </code>
+      <code>
+        <pre style={{ width: "min-content", margin: "auto", marginTop: "1rem" }}>
+          <Suspense fallback={<span>Loading...</span>}>
+            <LeaderBoard guildId="846468617142009917" />
+          </Suspense>
+        </pre>
+      </code>
     </Layout>
   );
 };
