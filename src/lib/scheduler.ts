@@ -1,4 +1,4 @@
-import { nanoid } from "npm:nanoid";
+import { nanoid } from "nanoid";
 import { db } from "./db.ts";
 import { Collection, OAuth2Guild, Snowflake } from "discord.js";
 import { client } from "@/bot.ts";

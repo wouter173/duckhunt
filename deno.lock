@@ -22,7 +22,8 @@
     "npm:discord.js@^14.16.3": "14.16.3",
     "npm:hono@*": "4.7.5",
     "npm:hono@^4.7.5": "4.7.5",
-    "npm:nanoid@*": "5.0.7"
+    "npm:nanoid@*": "5.0.7",
+    "npm:nanoid@^5.1.5": "5.1.5"
   },
   "jsr": {
     "@std/assert@1.0.6": {
@@ -192,6 +193,9 @@
     "nanoid@5.0.7": {
       "integrity": "sha512-oLxFY2gd2IqnjcYyOXD8XGCftpGtZP2AbHbOkthDkvRywH5ayNtPVy9YlOPcHckXzbLTCHpkb7FB+yuxKV13pQ=="
     },
+    "nanoid@5.1.5": {
+      "integrity": "sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw=="
+    },
     "ts-mixer@6.0.4": {
       "integrity": "sha512-ufKpbmrugz5Aou4wcr5Wc1UUFWOLhq+Fm6qa6P0w0K5Qw2yhaUoiWszhCVuNQyNwrlGiscHOmqYoAox1PtvgjA=="
     },
@@ -290,7 +294,8 @@
       "npm:discord-api-types@~0.37.102",
       "npm:discord.js@^14.16.3",
       "npm:hono@*",
-      "npm:hono@^4.7.5"
+      "npm:hono@^4.7.5",
+      "npm:nanoid@^5.1.5"
     ]
   }
 }

@@ -1,4 +1,4 @@
-import { Client, IntentsBitField } from "npm:discord.js";
+import { Client, IntentsBitField } from "discord.js";
 import { db } from "./lib/db.ts";
 
 const prefix = "!";

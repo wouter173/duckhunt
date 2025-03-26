@@ -1,71 +1,4 @@
-import { type PropsWithChildren, Suspense } from "npm:hono/jsx";
-import { db, GuildDuck } from "../../lib/db.ts";
-import { client } from "@/bot.ts";
-
-const Layout = (props: PropsWithChildren) => {
-  return (
-    <html>
-      <body>{props.children}</body>
-    </html>
-  );
-};
-
-export const AdminDashboard = ({ params }: { params: Record<string, string> }) => {
-  const status = params.status;
-
-  return (
-    <Layout>
-      {status && <p>{status}</p>}
-      <div>
-        <DuckSvg />
-        <GunSvg />
-        <h1>Duckhunt!</h1>
-      </div>
-      <form action="/admin/schedule">
-        <button>schedule</button>
-      </form>
-      <form action="/admin/sync-commands">
-        <button>sync commands</button>
-      </form>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Tasks />
-      </Suspense>
-    </Layout>
-  );
-};
-
-const Tasks = async () => {
-  const guilds = await client.guilds.fetch();
-  const ducks: (GuildDuck & { guildName: string })[] = [];
-
-  for (const guild of guilds.values()) {
-    const guildId = guild.id;
-    const guildDucks = await db.guildGetAllDucks({ guildId });
-    for await (const duck of guildDucks) {
-      ducks.push({ ...duck.value, guildName: guild.name });
-    }
-  }
-
-  ducks.sort((a, b) => a.spawnsAt.getTime() - b.spawnsAt.getTime());
-
-  return (
-    <>
-      <h2>Already spawned:</h2>
-      <ul>
-        {ducks.filter((d) => d.spawnsAt.getTime() < new Date().getTime()).map((d) => <li>{d.spawnsAt.toLocaleString()} in {d.guildName}
-        </li>)}
-      </ul>
-      <h2>Will spawn:</h2>
-      <ul>
-        {ducks
-          .filter((d) => d.spawnsAt.getTime() > new Date().getTime())
-          .map((d) => <li>{d.spawnsAt.toLocaleString()} in {d.guildName}</li>)}
-      </ul>
-    </>
-  );
-};
-
-const GunSvg = () => (
+export const GunSvg = () => (
   <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 47.5 47.5" width="64" height="64">
     <script xmlns="" />
     <defs>
@@ -93,7 +26,7 @@ const GunSvg = () => (
   </svg>
 );
 
-const DuckSvg = () => (
+export const DuckSvg = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="Duck--Streamline-Twemoji" height="64" width="64">
     <path
       fill="#d99e82"

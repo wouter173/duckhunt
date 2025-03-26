@@ -21,7 +21,8 @@
     "discord-api-types": "npm:discord-api-types@^0.37.102",
     "discord.js": "npm:discord.js@^14.16.3",
     "hono": "npm:hono@^4.7.5",
-    "@/": "./src/"
+    "@/": "./src/",
+    "nanoid": "npm:nanoid@^5.1.5"
   },
   "compilerOptions": {
     "jsx": "precompile",

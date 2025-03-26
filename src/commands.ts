@@ -1,7 +1,6 @@
-import { SlashCommandBuilder } from "npm:@discordjs/builders";
-import { REST } from "npm:@discordjs/rest";
-
-import { ChannelType, Routes } from "npm:discord-api-types/v10";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { REST } from "@discordjs/rest";
+import { ChannelType, Routes } from "discord-api-types/v10";
 import { raise } from "./lib/utils.ts";
 
 const clientId = Deno.env.get("CLIENT_ID") ?? raise("Missing environment variable, CLIENT_ID");
