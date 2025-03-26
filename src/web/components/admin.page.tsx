@@ -3,6 +3,7 @@ import { Layout } from "@/web/components/layout.tsx";
 import { DuckSvg, GunSvg } from "@/web/components/svg.tsx";
 import { Suspense } from "hono/jsx";
 import { db, GuildDuck } from "../../lib/db.ts";
+import { toArray } from "@/lib/utils.ts";
 
 export const AdminPage = ({ params }: { params: Record<string, string> }) => {
   const status = params.status;
@@ -40,14 +41,15 @@ const Tasks = async () => {
     }
   }
 
-  ducks.sort((a, b) => a.spawnsAt.getTime() - b.spawnsAt.getTime());
+  ducks.sort((a, b) => b.spawnsAt.getTime() - a.spawnsAt.getTime());
+
+  const tasks = (await toArray(db.schedulerListTasks())).sort((a, b) => b.invokeAt.getTime() - a.invokeAt.getTime());
 
   return (
-    <>
-      <h2>Already spawned:</h2>
+    <code>
+      <h2>Scheduled Tasks:</h2>
       <ul>
-        {ducks.filter((d) => d.spawnsAt.getTime() < new Date().getTime()).map((d) => <li>{d.spawnsAt.toLocaleString()} in {d.guildName}
-        </li>)}
+        {tasks.map((t) => <li>{t.invokeAt.toLocaleString()} ({t.type}) in {t.payload.guildId}</li>)}
       </ul>
       <h2>Will spawn:</h2>
       <ul>
@@ -55,6 +57,11 @@ const Tasks = async () => {
           .filter((d) => d.spawnsAt.getTime() > new Date().getTime())
           .map((d) => <li>{d.spawnsAt.toLocaleString()} in {d.guildName}</li>)}
       </ul>
-    </>
+      <h2>Already spawned:</h2>
+      <ul>
+        {ducks.filter((d) => d.spawnsAt.getTime() < new Date().getTime()).map((d) => <li>{d.spawnsAt.toLocaleString()} in {d.guildName}
+        </li>)}
+      </ul>
+    </code>
   );
 };
