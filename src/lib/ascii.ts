@@ -7,11 +7,11 @@ const logo = `
 <span class='w-full text-center inline-block dark:bg-blue-950/40'> >(')____,  >(')____,    | | | | | | |/ __| |/ / | '_ \\| | | | '_ \\| __|  >(')____,  >(')____,   </span>
 <span class='w-full text-center inline-block dark:bg-blue-950/50'>   (\` =~~/    (\` =~~/    | |_| | |_| | (__|   <  | | | | |_| | | | | |_     (\` =~~/    (\` =~~/   </span>
 <span class='w-full text-center inline-block dark:bg-blue-950/60 text-blue-400'>,.-​'\`---'°​-​,,.-\`---'-,,.-'​\`'°​-​,,.-​''\`-,,.-'​\`'°​-​,,.-​''\`-,,.-'\`'°​-​,,.-​''\`-,,.-'​\`---'.-​''\`-\`---''°​-​,</span>
-`.replace(/ >/g, "<span class='text-orange-400'> \></span>")
-  .replace(/\('\)____,/g, "<span class='dark:text-yellow-300 text-yellow-400 font-semibold'>(')____,</span>")
-  .replace(/\(\` =~~\//g, "<span class='dark:text-yellow-300 text-yellow-400 font-semibold'>(` =~~/</span>")
-  .replace(/\`---'/g, "<span class='dark:text-yellow-300 text-yellow-400 font-semibold'>`---'</span>")
-  .replace(/  _      /g, "<span class='dark:text-yellow-300 text-yellow-400 font-semibold'>  _      </span>");
+`.replace(/ >/g, "<span class='text-orange-400 '> \></span>")
+  .replace(/\('\)____,/g, "<span class='dark:text-yellow-300 text-black'>(')____,</span>")
+  .replace(/\(\` =~~\//g, "<span class='dark:text-yellow-300 text-black'>(` =~~/</span>")
+  .replace(/\`---'/g, "<span class='dark:text-yellow-300 text-black'>`---'</span>")
+  .replace(/  _      /g, "<span class='dark:text-yellow-300 text-black'>  _      </span>");
 
 type Stat = { name: string; kills: number };
 const podium = (positions: { first: Stat; second: Stat; third: Stat }) => {

@@ -10,7 +10,7 @@ export const Layout = (props: PropsWithChildren) => {
         <link rel="stylesheet" href="/tailwind.generated.css" />
         <link rel="icon" href="/favicon.png" type="image/png" />
       </head>
-      <body class="dark:bg-[#161616] dark:text-stone-200">{props.children}</body>
+      <body class="dark:bg-[#161616] dark:text-stone-200 text-sm">{props.children}</body>
     </html>
   );
 };
