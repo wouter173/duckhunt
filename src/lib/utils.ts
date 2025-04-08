@@ -21,3 +21,19 @@ export function stream<E extends Env, P extends string, I extends Input>(
     headers: { "Content-Type": "text/html; charset=UTF-8", "Transfer-Encoding": "chunked" },
   });
 }
+
+export function fitName(name: string, maxLength: number) {
+  if (name.length > maxLength) {
+    return name.slice(0, maxLength - 3) + "...";
+  }
+
+  if (name.length === maxLength) {
+    return name;
+  }
+
+  const padding = (maxLength - name.length) / 2;
+  const paddingStart = Math.floor(padding);
+  const paddingEnd = Math.ceil(padding);
+
+  return " ".repeat(paddingStart) + name + " ".repeat(paddingEnd);
+}
