@@ -44,7 +44,7 @@ export const DashboardPage = ({ params }: { params: Record<string, string> }) =>
   return (
     <Layout>
       {status && <p>{status}</p>}
-      <h1 class="invisible">Duckhunt!</h1>
+      <h1 class="hidden">Duckhunt!</h1>
       <code aria-hidden>
         <pre class="w-full" dangerouslySetInnerHTML={{ __html: ascii.logo }} />
       </code>

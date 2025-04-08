@@ -244,6 +244,9 @@
   .grid {
     display: grid;
   }
+  .hidden {
+    display: none;
+  }
   .inline-block {
     display: inline-block;
   }
@@ -479,6 +482,22 @@
       background-color: color-mix(in srgb, oklch(28.2% 0.091 267.935) 60%, transparent);
       @supports (color: color-mix(in lab, red, red)) {
         background-color: color-mix(in oklab, var(--color-blue-950) 60%, transparent);
+      }
+    }
+  }
+  .dark\:bg-blue-950\/70 {
+    @media (prefers-color-scheme: dark) {
+      background-color: color-mix(in srgb, oklch(28.2% 0.091 267.935) 70%, transparent);
+      @supports (color: color-mix(in lab, red, red)) {
+        background-color: color-mix(in oklab, var(--color-blue-950) 70%, transparent);
+      }
+    }
+  }
+  .dark\:bg-blue-950\/80 {
+    @media (prefers-color-scheme: dark) {
+      background-color: color-mix(in srgb, oklch(28.2% 0.091 267.935) 80%, transparent);
+      @supports (color: color-mix(in lab, red, red)) {
+        background-color: color-mix(in oklab, var(--color-blue-950) 80%, transparent);
       }
     }
   }
