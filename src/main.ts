@@ -1,4 +1,5 @@
 import { client } from "./bot.ts";
+import { env } from "@/lib/env.ts";
 
 import { scheduler } from "./lib/scheduler.ts";
 import { app } from "./web/router.ts";
@@ -11,4 +12,4 @@ Deno.cron("scheduler-schedule-tasks", "0 0 * * *", scheduler.scheduleDucks);
 Deno.cron("scheduler-handle-tasks", "* * * * *", scheduler.handleTasks);
 
 //Bot
-client.login(Deno.env.get("TOKEN"));
+client.login(env.TOKEN);

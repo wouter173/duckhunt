@@ -2,6 +2,7 @@ import { Layout } from "@/web/components/layout.tsx";
 import { Suspense } from "hono/jsx";
 import { client } from "@/bot.ts";
 import { db } from "@/lib/db.ts";
+import { env } from "@/lib/env.ts";
 
 const LeaderBoard = async ({ guildId }: { guildId: string }) => {
   const killsMap: Record<string, number> = {};
@@ -27,7 +28,7 @@ const LeaderBoard = async ({ guildId }: { guildId: string }) => {
 
 export const DashboardPage = ({ params }: { params: Record<string, string> }) => {
   const status = params.status;
-  const guildId = Deno.env.get("GUILD_ID")!;
+  const guildId = env.GUILD_ID;
 
   return (
     <Layout>

@@ -1,11 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { REST } from "@discordjs/rest";
 import { ChannelType, Routes } from "discord-api-types/v10";
-import { raise } from "./lib/utils.ts";
-
-const clientId = Deno.env.get("CLIENT_ID") ?? raise("Missing environment variable, CLIENT_ID");
-const guildId = Deno.env.get("GUILD_ID") ?? raise("Missing environment variable, GUILD_ID");
-const token = Deno.env.get("TOKEN") ?? raise("Missing environment variable, TOKEN");
+import { env } from "@/lib/env.ts";
 
 const commands = [
   new SlashCommandBuilder()
@@ -34,7 +30,7 @@ const commands = [
     ),
 ];
 
-const rest = new REST().setToken(token);
+const rest = new REST().setToken(env.TOKEN);
 
 export async function syncCommands() {
   try {
@@ -43,7 +39,7 @@ export async function syncCommands() {
     );
 
     const data = await rest.put(
-      Routes.applicationGuildCommands(clientId, guildId),
+      Routes.applicationGuildCommands(env.CLIENT_ID, env.GUILD_ID),
       { body: commands },
     );
 

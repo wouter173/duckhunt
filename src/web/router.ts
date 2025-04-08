@@ -8,6 +8,7 @@ import { basicAuth } from "hono/basic-auth";
 import { db } from "@/lib/db.ts";
 import { syncCommands } from "@/commands.ts";
 import { DashboardPage } from "@/web/components/dashboard.page.tsx";
+import { env } from "@/lib/env.ts";
 
 const app = new Hono();
 
@@ -20,13 +21,7 @@ app.get("/health", (c) => {
 });
 app.get("/", (c) => stream(c, DashboardPage));
 
-app.use(
-  "/admin/*",
-  basicAuth({
-    username: Deno.env.get("ADMIN_USERNAME")!,
-    password: Deno.env.get("ADMIN_PASSWORD")!,
-  }),
-);
+app.use("/admin/*", basicAuth({ username: env.ADMIN_USERNAME, password: env.ADMIN_PASSWORD }));
 
 app.get("/admin", (c) => stream(c, AdminPage));
 app.get("/admin/schedule", async (c) => {
@@ -34,7 +29,7 @@ app.get("/admin/schedule", async (c) => {
   return c.redirect(`/admin?status=${encodeURIComponent("Tasks scheduled!")}`);
 });
 app.get("/admin/schedule-now", async (c) => {
-  await scheduler.scheduleDuck({ delay: 1 * 1000 * 60, guildId: Deno.env.get("GUILD_ID")! });
+  await scheduler.scheduleDuck({ delay: 1 * 1000 * 60, guildId: env.GUILD_ID });
   return c.redirect(`/admin?status=${encodeURIComponent("Tasks scheduled for in 1 minute!")}`);
 });
 app.get("/admin/dequeue", async (c) => {
