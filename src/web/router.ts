@@ -2,17 +2,19 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { client } from "@/bot.ts";
 import { stream, toArray } from "@/lib/utils.ts";
-import { AdminPage } from "./components/admin.page.tsx";
+import { AdminPage } from "./pages/admin.page.tsx";
 import { scheduler } from "@/lib/scheduler.ts";
 import { basicAuth } from "hono/basic-auth";
 import { db } from "@/lib/db.ts";
 import { syncCommands } from "@/commands.ts";
-import { DashboardPage } from "@/web/components/dashboard.page.tsx";
+import { DashboardPage } from "./pages/dashboard.page.tsx";
 import { env } from "@/lib/env.ts";
+import { serveStatic } from "hono/deno";
 
 const app = new Hono();
 
 app.use(logger());
+
 app.get("/health", (c) => {
   if (!client.isReady) return c.text("NOT READY");
   if (client.user === null) return c.text("NOT CONNECTED");
@@ -20,6 +22,7 @@ app.get("/health", (c) => {
   return c.text("OK");
 });
 app.get("/", (c) => stream(c, DashboardPage));
+app.get("*", serveStatic({ root: "public" }));
 
 app.use("/admin/*", basicAuth({ username: env.ADMIN_USERNAME, password: env.ADMIN_PASSWORD }));
 
