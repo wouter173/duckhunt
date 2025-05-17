@@ -1,6 +1,7 @@
 import { Context, Env, Input } from "hono";
 import { renderToReadableStream } from "hono/jsx/streaming";
 import { JSX } from "hono/jsx/base";
+import { JSXNode } from "hono/jsx";
 
 export function raise(msg: string): never {
   throw new Error(msg);

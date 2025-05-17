@@ -2,31 +2,34 @@ import { PropsWithChildren } from "hono/jsx";
 
 export const Podium = ({ winners }: { winners: { name: string; kills: number; imageUrl: string }[] }) => {
   return (
-    <div class="grid-cols-3 grid h-64 overflow-hidden">
-      <Column
-        position={1}
-        width={13}
-        height={5}
-        metric={winners[1].kills + ""}
-        name={`2. ${winners[1].name}`}
-        imageUrl={winners[1].imageUrl}
-      />
-      <Column
-        position={0}
-        width={13}
-        height={7}
-        metric={winners[0].kills + ""}
-        name={`1. ${winners[0].name}`}
-        imageUrl={winners[0].imageUrl}
-      />
-      <Column
-        position={2}
-        width={13}
-        height={3}
-        metric={winners[2].kills + ""}
-        name={`3. ${winners[2].name}`}
-        imageUrl={winners[2].imageUrl}
-      />
+    <div>
+      <div class="grid-cols-3 grid h-64 overflow-hidden">
+        <Column
+          position={1}
+          width={13}
+          height={5}
+          metric={winners[1].kills + ""}
+          name={winners[1].name}
+          imageUrl={winners[1].imageUrl}
+        />
+        <Column
+          position={0}
+          width={13}
+          height={7}
+          metric={winners[0].kills + ""}
+          name={winners[0].name}
+          imageUrl={winners[0].imageUrl}
+        />
+        <Column
+          position={2}
+          width={13}
+          height={3}
+          metric={winners[2].kills + ""}
+          name={winners[2].name}
+          imageUrl={winners[2].imageUrl}
+        />
+      </div>
+      <span class="font-mono text-stone-400">+{"-".repeat(38)}+</span>
     </div>
   );
 };
@@ -51,7 +54,7 @@ const Column = (
       }}
     >
       <div
-        class="relative mb-4 delay-2000 starting:scale-0 scale-100 transition-transform"
+        class="relative mb-6 delay-2000 starting:scale-0 scale-100 transition-transform"
         style={{ transitionTimingFunction: `steps(3, end)` }}
       >
         <img

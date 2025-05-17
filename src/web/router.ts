@@ -10,6 +10,7 @@ import { syncCommands } from "@/commands.ts";
 import { DashboardPage } from "./pages/dashboard.page.tsx";
 import { env } from "@/lib/env.ts";
 import { serveStatic } from "hono/deno";
+import { ogRoute } from "@/web/pages/og.route.tsx";
 
 const app = new Hono();
 
@@ -22,6 +23,7 @@ app.get("/health", (c) => {
   return c.text("OK");
 });
 app.get("/", (c) => stream(c, DashboardPage));
+app.get("/og", ogRoute);
 app.get("*", serveStatic({ root: "public" }));
 
 app.use("/admin/*", basicAuth({ username: env.ADMIN_USERNAME, password: env.ADMIN_PASSWORD }));
