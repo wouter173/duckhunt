@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  mxfx: link:../../../../Library/pnpm/global/5/node_modules/mxfx
+
 importers:
 
   .:
@@ -18,8 +21,8 @@ importers:
         specifier: 4.0.0-beta.28
         version: 4.0.0-beta.28
       mxfx:
-        specifier: workspace:*
-        version: link:packages/mxfx
+        specifier: link:../../../../Library/pnpm/global/5/node_modules/mxfx
+        version: link:../../../../Library/pnpm/global/5/node_modules/mxfx
       nanoid:
         specifier: ^5.1.6
         version: 5.1.6
@@ -51,19 +54,6 @@ importers:
       vitest:
         specifier: ^3.0.0
         version: 3.2.4(@types/debug@4.1.12)(@types/node@24.10.0)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.2)
-
-  packages/mxfx:
-    dependencies:
-      effect:
-        specifier: 4.0.0-beta.28
-        version: 4.0.0-beta.28
-      expo-secure-store:
-        specifier: ^15.0.7
-        version: 15.0.7(expo@54.0.23(@babel/core@7.28.5)(react-native@0.82.1(@babel/core@7.28.5)(react@19.2.0))(react@19.2.0))
-    devDependencies:
-      '@effect/vitest':
-        specifier: 4.0.0-beta.28
-        version: 4.0.0-beta.28(effect@4.0.0-beta.28)(vitest@3.2.4(@types/debug@4.1.12)(@types/node@24.10.0)(lightningcss@1.30.2)(terser@5.44.1)(tsx@4.20.6)(yaml@2.8.2))
 
 packages:
 
